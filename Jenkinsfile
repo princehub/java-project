@@ -37,7 +37,7 @@ pipeline {
         label 'CentOS'
       }
       steps {
-        sh "wget http://localhost/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
+        sh "wget http://localhost:80/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
         sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
       }
     }
@@ -46,8 +46,15 @@ pipeline {
         docker 'openjdk:8u121-jre'
       }
       steps {
-        sh "wget http://localhost/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
-        sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
+        //sh "wget http://localhost:80/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
+        //sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
+        echo 'Commented docker section'
+      }
+    }
+    
+    stage('Promote to Green') {
+      steps {
+        sh "cp dist/rectangle_${env.BUILD_NUMBER}.jar /var/www/html/rectangles/green/"
       }
     }
   }
