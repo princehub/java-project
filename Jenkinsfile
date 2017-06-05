@@ -7,7 +7,6 @@ pipeline {
   }
 
   stages {
-     stages {
         stage("Input Test") {
             steps {
                 script {
@@ -16,7 +15,6 @@ pipeline {
                 }
                 echo "${env.RELEASE_SCOPE}"
             }
-        }
     }
     stage('Say Hello') {
       agent any
