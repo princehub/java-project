@@ -6,6 +6,26 @@ pipeline {
   }
 
   stages {
+        stage("Input Test") {
+            steps {
+                script {
+                    env.RELEASE_SCOPE = input message: 'User input required', ok: 'Release It!',
+                            parameters: [choice(name: 'RELEASE_SCOPE', choices: 'patch\nminor\nmajor', description: 'What is the release scope?')]
+                }
+                echo "${env.RELEASE_SCOPE}"
+            }
+    }
+    stage('Say Hello') {
+      agent any
+      steps {
+        sayHello 'Awesome Nani'
+        echo "branch = ${env.BRANCH_NAME}"
+        script {
+          def myLib = new linuxacademy.git.gitStuff()
+          echo "My commit: ${myLib.gitCommit("${env.WORKSPACE}/.git")}"
+        }
+      }
+    }
     stage('Unit Tests') {
       agent {
         label 'apache'
@@ -75,6 +95,7 @@ pipeline {
         branch 'development'
       }
       steps {
+        /*
         echo "Stashing Any Local Changes"
         sh 'git stash'
         echo "Checking Out Development Branch"
@@ -82,10 +103,21 @@ pipeline {
         echo 'Checking Out Master Branch'
         sh 'git pull origin'
         sh 'git checkout master'
-        echo 'Merging Development into Master Branch ours'
+        sh 'git pull origin'
+        echo 'Merging Development into Master Branch ours....'
         sh 'git merge -s ours development'
         echo 'Pushing to Origin Master Force'
         sh 'git push -f origin master'
+        */
+        sh 'git checkout development'
+        sh 'git pull'
+        sh 'git checkout master'
+        sh 'git pull'
+        sh 'git checkout development'
+        sh 'git merge -s ours master'
+        sh 'git checkout master'
+        sh 'git merge development'
+        sh 'git push origin master'
         echo 'Tagging the Release'
         sh "git tag rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
         sh "git push origin rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
