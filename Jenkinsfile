@@ -3,9 +3,19 @@ pipeline {
 
   environment {
     MAJOR_VERSION = 1
+    RELEASE_SCOPE = "minor"
   }
 
   stages {
+        stage("Input Test") {
+            steps {
+                script {
+                    env.RELEASE_SCOPE = input message: 'User input required', ok: 'Release!',
+                            parameters: [choice(name: 'RELEASE_SCOPE', choices: 'patch\nminor\nmajor', description: 'What is the release scope?')]
+                }
+                echo "${env.RELEASE_SCOPE}"
+            }
+    }
     stage('Say Hello') {
       agent any
       steps {
