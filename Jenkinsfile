@@ -75,6 +75,7 @@ pipeline {
         branch 'development'
       }
       steps {
+        /*
         echo "Stashing Any Local Changes"
         sh 'git stash'
         echo "Checking Out Development Branch"
@@ -87,6 +88,16 @@ pipeline {
         sh 'git merge -s ours development'
         echo 'Pushing to Origin Master Force'
         sh 'git push -f origin master'
+        */
+        sh 'git checkout development'
+        sh 'git pull'
+        sh 'git checkout master'
+        sh 'git pull'
+        sh 'git checkout development'
+        sh 'git merge -s ours master'
+        sh 'git checkout master'
+        sh 'git merge development'
+        sh 'git push origin master'
         echo 'Tagging the Release'
         sh "git tag rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
         sh "git push origin rectangle-${env.MAJOR_VERSION}.${env.BUILD_NUMBER}"
